@@ -1,0 +1,30 @@
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 2rem;
+}
+
+.deleted-tasks-section {
+  margin-top: 2rem;
+
+  h4 {
+    font-size: 1rem;
+    color: #1f2937;
+    margin-bottom: 0.75rem;
+  }
+
+  .deleted-task {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    padding: 0.25rem 0;
+    border-bottom: 1px dashed #e5e7eb;
+  }
+}

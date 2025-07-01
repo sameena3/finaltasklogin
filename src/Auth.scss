@@ -1,0 +1,52 @@
+.auth-form {
+  max-width: 400px;
+  margin: 4rem auto;
+  background: #f0f4ff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+
+  h2 {
+    margin-bottom: 1rem;
+    color: #2b3a67;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    input {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 0.75rem;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+
+      &:hover {
+        background-color: #4338ca;
+      }
+    }
+
+    p {
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    a {
+      color: #4f46e5;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  }
+}
