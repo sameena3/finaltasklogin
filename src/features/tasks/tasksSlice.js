@@ -1,82 +1,106 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  tasks: [
-    {
-      id: 1,
-      text: 'Complete project proposal',
-      completed: false,
-      dueDate:null,
-      hasReminder: true,
-    },
-    {
-      id: 2,
-      text: 'Review team feedback',
-      completed: true,
-      dueDate: '2025-06-30T16:00:00',
-      hasReminder: false,
-    },
-    {
-      id: 3,
-      text: 'Schedule client meeting',
-      completed: false,
-      dueDate: null,
-      hasReminder: false,
-    },
-  ],
-  deletedTasks: [],
-  activeView: 'all',
-};
-/*state → entire store
+const initialUserTasks = JSON.parse(localStorage.getItem('userTasks')) || {};
 
-state.tasks → the slice of state managed by your tasksSlice (from createSlice())*/
 const tasksSlice = createSlice({
   name: 'tasks',
-  initialState,
+  initialState: {
+    userTasks: initialUserTasks,
+    activeView: 'all',
+  },
   reducers: {
-   addTask: (state, action) => {
-  const currentUser = action.payload.email; // passed from component
-  const newTask = {
-    id: Date.now(),
-    text: action.payload.text,
-    completed: false,
-    dueDate: action.payload.dueDate || null,
-    hasReminder: action.payload.hasReminder || false,
-  };
+    setTasks: (state, action) => {
+      const { email, tasks } = action.payload;
+      state.userTasks[email] = tasks;
+      localStorage.setItem('userTasks', JSON.stringify(state.userTasks));
+    },
 
-  // Save to localStorage per user
-  const userTasks = JSON.parse(localStorage.getItem(currentUser + '_tasks')) || [];
-  const updatedTasks = [...userTasks, newTask];
-  localStorage.setItem(currentUser + '_tasks', JSON.stringify(updatedTasks));
+    addTask: (state, action) => {
+      const { email, task } = action.payload;
+     /* const newTask = {
+        id: Date.now(),
+        text: task.text,
+        completed: false,
+        dueDate: task.dueDate || null,
+        hasReminder: task.hasReminder || false,
+      };*/
 
-  // Update Redux state
-  state.tasks.push(newTask);
+      if (!state.userTasks[email]) {
+        state.userTasks[email] = [];}//  is checking whether the user with the given email has any tasks saved in the userTasks
+        /*{
+  "sameena@gmail.com": []
 }
-,
+*/
+//It updates Redux state → state.userTasks[email]
+      state.userTasks[email].push(task);
+      /*{
+  "sameena@gmail.com": [ The value is an array of tasks
+    { title: "Learn Redux", completed: false, ... }
+  ]
+}
+*/
+      localStorage.setItem('userTasks', JSON.stringify(state.userTasks));
+    },
+
     toggleTask: (state, action) => {
-      const task = state.tasks.find(t => t.id === action.payload);
+      const { email, taskId } = action.payload;
+     // const taskList = state.userTasks[email] || [];
+      const task = state.userTasks[email].find(t => t.id === taskId);
+
       if (task) {
-        task.completed = !task.completed;//Immer detects the change, and creates a new copy of state.tasks with that update
+        task.completed = !task.completed;
+        localStorage.setItem('userTasks', JSON.stringify(state.userTasks));
       }
     },
-   deleteTask: (state, action) => {
-  const task = state.tasks.find(t => t.id === action.payload);
-  if (task) {
-    state.tasks = state.tasks.filter(t => t.id !== action.payload); // remove from tasks
-    state.deletedTasks.push(task); // add to trash
+
+    deleteTask: (state, action) => {
+      const { email, taskId } = action.payload;
+   //   const taskList = state.userTasks[email] || [];
+      const taskToDelete = state.userTasks[email].find(t => t.id === taskId);
+      /*{
+  "userTasks": {
+    "sameena@gmail.com": [
+      { id: 1, title: "Buy Milk", reminder: false },
+      { id: 2, title: "Study React", reminder: true }
+    ],
+    "deletedTasks": {
+      "sameena@gmail.com": [
+        { id: 3, title: "Old Task", reminder: false }
+      ]
+    }
   }
 }
-,
-    clearTrash: (state) => {
-      state.deletedTasks = [];
+*/
+
+      state.userTasks[email] = state.userTasks[email].filter(t => t.id !== taskId);
+      if (!state.userTasks.deletedTasks) state.userTasks.deletedTasks = {};//"If this particular user (email) doesn’t have a trash bin, create an empty one."
+      if (!state.userTasks.deletedTasks[email]) state.userTasks.deletedTasks[email] = [];
+
+      state.userTasks.deletedTasks[email].push(taskToDelete);
+      localStorage.setItem('userTasks', JSON.stringify(state.userTasks));
     },
+
+    clearTrash: (state, action) => {
+      const email = action.payload;
+      if (state.userTasks.deletedTasks && state.userTasks.deletedTasks[email]) {
+        state.userTasks.deletedTasks[email] = [];
+        localStorage.setItem('userTasks', JSON.stringify(state.userTasks));
+      }
+    },
+
     setActiveView: (state, action) => {
-  state.activeView = action.payload;
-},
-
-
+      state.activeView = action.payload;
+    },
   }
 });
 
-export const { addTask, toggleTask, deleteTask, clearTrash,setActiveView } = tasksSlice.actions;
+export const {
+  setTasks,
+  addTask,
+  toggleTask,
+  deleteTask,
+  clearTrash,
+  setActiveView
+} = tasksSlice.actions;
+
 export default tasksSlice.reducer;

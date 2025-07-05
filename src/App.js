@@ -1,16 +1,19 @@
-import React from 'react';
-import Sidebar from './sidebar';
+import { useSelector } from 'react-redux';
 import TaskInput from './TaskInput';
+import Sidebar from './sidebar';
 import TaskList from './TaskList';
+import AuthForm from './RegisterForm';
 import './App.scss';
 
 function App() {
+  const currentUser = useSelector((state) => state.auth.currentUser);
+
+  if (!currentUser) return <AuthForm />;
+
   return (
     <div className="app">
       <div className="container">
-     
         <Sidebar />
-
         <div className="main-content">
           <div className="dashboard-header">
             <h1>Task Manager</h1>

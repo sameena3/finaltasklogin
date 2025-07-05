@@ -1,35 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap');
+
 .app {
-  display: flex;
-  height: 100vh;
-  background-color: rgb(249, 249, 249);
+  background-color: #f4f7f6;
   font-family: 'Lora', serif;
+  min-height: 100vh;
+  padding: 1rem;
+
+  .container {
+    display: flex;
+    flex-direction: row; // 💥 important: sidebar + content side by side
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    overflow: hidden;
+
+    @media (max-width: 768px) {
+      flex-direction: column; // On mobile: stack vertically
+    }
+  }
 }
 
-.container {
-  display: flex;
-  flex: 1;
+.sidebar,
+.navbar {
+  width: 260px;
+  background-color: #2512a1;
+  color: white;
+  flex-shrink: 0;
+  padding: 1rem;
 }
 
 .main-content {
-  flex: 1;
+  flex-grow: 1;
   padding: 2rem;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 
   .dashboard-header {
-    margin-bottom: 1.5rem;
+    text-align: center;
 
     h1 {
+      color: #2512a1;
       font-size: 2rem;
-      color: rgb(5, 5, 1);
-      text-align: center;
-      font-weight: bolder;
+      margin-bottom: 0.5rem;
     }
 
     p {
-      color: #1f0ea0;
-      text-align: center;
-      font-size: larger;
-      font-style: oblique;
+      color: #555;
+      font-size: 1rem;
     }
   }
 }

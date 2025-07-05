@@ -1,23 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ListChecks, CheckCircle, Clock, Trash2 } from 'lucide-react';
 import './sidebar.scss';
 import { setActiveView, clearTrash } from './features/tasks/tasksSlice';
+import { logout } from './features/auth/authSlice'; // make sure this is correct
 
 const Sidebar = () => {
   const dispatch = useDispatch();
+  const { activeView, userTasks } = useSelector((state) => state.tasks);
 
-  const { activeView, tasks, deletedTasks } = useSelector((state) => state.tasks);
-/*const taskState = useSelector(state => state.tasks);
+  const [currentUserEmail, setCurrentUserEmail] = useState('');
 
-const tasks = taskState.tasks;
-const deletedTasks = taskState.deletedTasks;
-const activeView = taskState.activeView;
-*/
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (user) setCurrentUserEmail(user.email);
+  }, []);
+
+  const tasks = userTasks[currentUserEmail] || [];
+  const deletedTasks = (userTasks.deletedTasks?.[currentUserEmail]) || [];
+
   const pendingCount = tasks.filter((t) => !t.completed).length;
   const completedCount = tasks.filter((t) => t.completed).length;
   const totalCount = tasks.length;
   const deletedCount = deletedTasks.length;
+
+  const handleLogout = () => {
+    dispatch(logout()); // or navigate to login
+  };
 
   return (
     <aside className="navbar">
@@ -35,7 +44,7 @@ const activeView = taskState.activeView;
 
         <div className="nav-items">
           <button
-            className="nav-item gray "
+            className="nav-item gray"
             onClick={() => dispatch(setActiveView('all'))}
           >
             <div className="nav-item-content">
@@ -68,7 +77,7 @@ const activeView = taskState.activeView;
           </button>
 
           <button
-            className="nav-item red" 
+            className="nav-item red"
             onClick={() => dispatch(setActiveView('trash'))}
           >
             <div className="nav-item-content">
@@ -80,22 +89,24 @@ const activeView = taskState.activeView;
         </div>
       </div>
 
-   <div className="clear-btn-wrapper">
-  <button className="clear-btn" onClick={() => dispatch(clearTrash())}>
-    <Trash2 size={16} />
-    Clear Trash
-  </button>
-</div>
+      <div className="clear-btn-wrapper">
+        <button className="clear-btn" onClick={() => dispatch(clearTrash(currentUserEmail))}>
+          <Trash2 size={16} />
+          Clear Trash
+        </button>
+      </div>
 
-        
+      <div className="stats-section">
+        <p className="stats-title">Total: {totalCount}</p>
+        <p className="stats-text">Completed: {completedCount}</p>
+        <p className="stats-text">Pending: {pendingCount}</p>
+        <p className="stats-text">Deleted: {deletedCount}</p>
+      </div>
 
-        <div className="stats-section">
-          <p className="stats-title">Total: {totalCount}</p>
-          <p className="stats-text">Completed: {completedCount}</p>
-          <p className="stats-text">Pending: {pendingCount}</p>
-          <p className="stats-text">Deleted: {deletedCount}</p>
-        </div>
-
+      <div className="user-footer">
+        <p style={{ fontSize: '14px', color: '#ccc' }}>{currentUserEmail}</p>
+        <button onClick={handleLogout} className="logout-btn">Logout</button>
+      </div>
     </aside>
   );
 };
