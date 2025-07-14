@@ -4,9 +4,11 @@ import { ListChecks, CheckCircle, Clock, Trash2 } from 'lucide-react';
 import './sidebar.scss';
 import { setActiveView, clearTrash } from './features/tasks/tasksSlice';
 import { logout } from './features/auth/authSlice'; // make sure this is correct
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { activeView, userTasks } = useSelector((state) => state.tasks);
 
   const [currentUserEmail, setCurrentUserEmail] = useState('');
@@ -25,7 +27,8 @@ const Sidebar = () => {
   const deletedCount = deletedTasks.length;
 
   const handleLogout = () => {
-    dispatch(logout()); // or navigate to login
+    dispatch(logout());
+    navigate('/login');
   };
 
   return (
