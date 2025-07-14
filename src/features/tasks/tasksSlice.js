@@ -101,6 +101,39 @@ const tasksSlice = createSlice({
         localStorage.setItem('userTasks', JSON.stringify(state.userTasks));
       }
     },
+    toggleSubtask: (state, action) => {
+      const { email, taskId, subtaskId } = action.payload;
+      const task = state.userTasks[email]?.find(t => t.id === taskId);
+      if (task) {
+        const sub = task.subtasks.find(s => s.id === subtaskId);
+        if (sub) sub.completed = !sub.completed;
+        // If all subtasks complete, set task.completed = true
+        if (task.subtasks.length && task.subtasks.every(s => s.completed)) {
+          task.completed = true;
+        } else {
+          task.completed = false;
+        }
+        // XP logic: partial XP for each subtask
+        if (task.xp) {
+          const completedCount = task.subtasks.filter(s => s.completed).length;
+          task.xpEarned = Math.floor((completedCount / task.subtasks.length) * task.xp);
+        }
+        localStorage.setItem('userTasks', JSON.stringify(state.userTasks));
+      }
+    },
+    bulkCompleteSubtasks: (state, action) => {
+      const { email, taskId, completed } = action.payload;
+      const task = state.userTasks[email]?.find(t => t.id === taskId);
+      if (task && Array.isArray(task.subtasks)) {
+        task.subtasks.forEach(s => { s.completed = completed; });
+        task.completed = completed;
+        // XP logic
+        if (task.xp) {
+          task.xpEarned = completed ? task.xp : 0;
+        }
+        localStorage.setItem('userTasks', JSON.stringify(state.userTasks));
+      }
+    },
   }
 });
 
@@ -111,7 +144,9 @@ export const {
   deleteTask,
   clearTrash,
   setActiveView,
-  addSubtask
+  addSubtask,
+  toggleSubtask,
+  bulkCompleteSubtasks
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;
