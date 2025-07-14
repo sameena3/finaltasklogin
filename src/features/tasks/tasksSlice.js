@@ -91,6 +91,16 @@ const tasksSlice = createSlice({
     setActiveView: (state, action) => {
       state.activeView = action.payload;
     },
+
+    addSubtask: (state, action) => {
+      const { email, taskId, subtask } = action.payload;
+      const task = state.userTasks[email]?.find(t => t.id === taskId);
+      if (task) {
+        if (!task.subtasks) task.subtasks = [];
+        task.subtasks.push({ ...subtask, id: Date.now() });
+        localStorage.setItem('userTasks', JSON.stringify(state.userTasks));
+      }
+    },
   }
 });
 
@@ -100,7 +110,8 @@ export const {
   toggleTask,
   deleteTask,
   clearTrash,
-  setActiveView
+  setActiveView,
+  addSubtask
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;

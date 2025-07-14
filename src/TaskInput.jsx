@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './taskinput.scss';
 import { useDispatch } from 'react-redux';
 import { addTask } from './features/tasks/tasksSlice';
+import { addSubtask } from './features/tasks/tasksSlice';
 
 function TaskInput() {
   const dispatch = useDispatch();
@@ -40,9 +41,12 @@ function TaskInput() {
 
   const handleSubtaskSubmit = (e) => {
     e.preventDefault();
-    // You would dispatch an action to add the subtask to the last created task here
-    // For now, just log or alert
-    alert(`Subtask added!\nTitle: ${subtask.title}\nDescription: ${subtask.description}\nCategory: ${subtask.category}`);
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    dispatch(addSubtask({
+      email: currentUser.email,
+      taskId: lastTaskId,
+      subtask,
+    }));
     setSubtask({ title: '', description: '', category: '' });
     setShowSubtaskForm(false);
     setLastTaskId(null);

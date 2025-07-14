@@ -49,6 +49,21 @@ const TaskItem = ({ task }) => {
             </span>
           </div>
         )}
+
+        {Array.isArray(task.subtasks) && task.subtasks.length > 0 && (
+          <div className="subtasks-list" style={{ marginTop: 8, paddingLeft: 16 }}>
+            <strong>Subtasks:</strong>
+            <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+              {task.subtasks.map((sub) => (
+                <li key={sub.id} style={{ marginBottom: 6, background: '#f3f3f3', borderRadius: 4, padding: 6 }}>
+                  <div><strong>Title:</strong> {sub.title}</div>
+                  <div><strong>Description:</strong> {sub.description}</div>
+                  <div><strong>Category:</strong> {sub.category}</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       <button className="delete-btn" onClick={handleDelete}>
